@@ -5,16 +5,16 @@
 \alias{floodplain_temperature_difference}
 \title{Floodplain temperature difference}
 \format{
-A list of 2 vectors of 366 elements:
-\describe{
-  \item{DOY}{day of year}
-  \item{Value}{difference in mean daily temperature (ºC)}
-}
+A nested named list of 15 vectors of daily temperature values. One list element for each location (Delta, Yolo) and one sub-list element for each water year (1997-2011).
 }
 \usage{
 floodplain_temperature_difference
 }
 \description{
-A dataset containing the difference between in temperature between the Toe Drain and floodplain
+Difference between in temperature between main channel and floodplain (where floodplain is inclusive of any off-channel rearing habitat)
+}
+\examples{
+floodplain_temperature_difference[["Yolo"]][["2000"]][200:210]
+
 }
 \keyword{datasets}

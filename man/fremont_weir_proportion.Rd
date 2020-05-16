@@ -5,17 +5,16 @@
 \alias{fremont_weir_proportion}
 \title{Proportion of fish entrained onto the Yolo Bypass at Fremont Weir}
 \format{
-A list comprised of 2 vectors of 5477 elements:
-\describe{
-  \item{Date}{calendar date}
-  \item{Value}{proportion of fish entering the Yolo Bypass}
-}
+A list of 15 vectors of daily entrainment proportions. One list element for each water year (1997-2011).
 }
 \usage{
 fremont_weir_proportion
 }
 \description{
-A dataset containing the predicted proportion of fish entering the Yolo Bypass
-for each day of the 15-yr model period.
+Proportion of fish entering the Yolo Bypass for each day of the 15-yr model period.
+}
+\examples{
+fremont_weir_proportion[["1998"]][105:115]
+
 }
 \keyword{datasets}

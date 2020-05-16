@@ -5,21 +5,21 @@
 \alias{annual_abundance}
 \title{Annual abundance of outmigrants}
 \format{
-A data frame with 15 rows and 5 columns:
+A named list of four named vectors:
 \describe{
-  \item{WaterYear}{defined as Oct 1st to Sept 30th}
-  \item{Winter}{winter-run annual abundance}
-  \item{Spring}{spring-run annual abundance}
-  \item{Fall}{fall-run annual abundance}
-  \item{LateFall}{late-fall-run annual abundance}
+  \item{List names}{"Fall", "LateFall", "Spring", "Winter"}
+  \item{Vector names}{"1997", "1998", ..., "2011"}
 }
 }
 \usage{
 annual_abundance
 }
 \description{
-A dataset containing the annual outmigrant abundance that enters the model
-in the Sacramento River at Knights Landing for each juvenile Chinook Salmon run
-in each year of the 15-yr model period.
+Annual outmigrant abundance that enters the model in the Sacramento River at Knights Landing
+for each juvenile Chinook Salmon run in each year of the 15-yr model period.
+}
+\examples{
+annual_abundance[["Fall"]][["2000"]]
+
 }
 \keyword{datasets}

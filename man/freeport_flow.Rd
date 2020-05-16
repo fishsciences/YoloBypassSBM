@@ -5,16 +5,16 @@
 \alias{freeport_flow}
 \title{Freeport Flow}
 \format{
-A list comprised of 2 vectors of 5477 elements:
-\describe{
-  \item{Date}{calendar date}
-  \item{Value}{flow (cfs) at Freeport}
-}
+A list of 15 vectors of flow values. One list element for each water year (1997-2011).
 }
 \usage{
 freeport_flow
 }
 \description{
-A dataset containing the modeled flow at Freeport.
+Flow (cfs) in the Sacramento River at Freeport.
+}
+\examples{
+freeport_flow[["1998"]][105:115]
+
 }
 \keyword{datasets}

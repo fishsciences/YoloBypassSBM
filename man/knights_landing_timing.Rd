@@ -5,22 +5,16 @@
 \alias{knights_landing_timing}
 \title{Knights Landing entry timing}
 \format{
-A data frame with 21528 rows and 7 columns:
-\describe{
-  \item{Date}{calendar date}
-  \item{WaterYear}{water year associated with Date; defined as Oct 1st to Sept 30th}
-  \item{Winter}{winter-run daily entry proportion}
-  \item{Spring}{spring-run daily entry proportion}
-  \item{Fall}{fall-run daily entry proportion}
-  \item{LateFall}{late-fall-run daily entry proportion}
-  \item{ModelDay}{model day where 1 is 1996-10-02, 365 is 1997-10-01, 730 is 1998-10-01, etc.}
-}
+Nested, named lists of vectors of daily values. One list element for each Chinook run (Fall, LateFall, Spring, Winter) and one sub-list element for each water year (1997-2011):
 }
 \usage{
 knights_landing_timing
 }
 \description{
-A dataset containing the proportion of the population that enters the model
-in the Sacramento River at Knights Landing on each day of the 15-yr model period.
+Proportion of the population that enters the model in the Sacramento River at Knights Landing on each day of the 15-yr model period.
+}
+\examples{
+knights_landing_timing[["Spring"]][["1998"]][105:115]
+
 }
 \keyword{datasets}

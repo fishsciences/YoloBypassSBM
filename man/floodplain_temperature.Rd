@@ -5,16 +5,16 @@
 \alias{floodplain_temperature}
 \title{Floodplain temperature}
 \format{
-A list of 2 vectors of 5477 elements:
-\describe{
-  \item{Date}{calendar date}
-  \item{Value}{mean daily temperature (ºC)}
-}
+A nested named list of 15 vectors of daily temperature values. One list element for each location (Delta, Yolo) and one sub-list element for each water year (1997-2011).
 }
 \usage{
 floodplain_temperature
 }
 \description{
-A dataset containing the daily temperature on the floodplain
+Daily temperature (ºC) on the floodplain (where floodplain is inclusive of any off-channel rearing habitat)
+}
+\examples{
+floodplain_temperature[["Delta"]][["2000"]][100:110]
+
 }
 \keyword{datasets}

@@ -5,11 +5,7 @@
 \alias{flood_duration}
 \title{Flood duration}
 \format{
-A list comprised of 2 vectors of 5477 elements:
-\describe{
-  \item{Date}{calendar date}
-  \item{Value}{flood duration (days)}
-}
+A list of 15 vectors of flood durations. One list element for each water year (1997-2011).
 }
 \usage{
 flood_duration
@@ -17,5 +13,9 @@ flood_duration
 \description{
 Number of days where Yolo Bypass flows exceeded 4,000 cfs in a window of 120 days
 from the date that cohort entered the Yolo Bypass.
+}
+\examples{
+flood_duration[["1998"]][105:115]
+
 }
 \keyword{datasets}

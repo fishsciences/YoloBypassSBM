@@ -1,9 +1,6 @@
 ## code to prepare datasets in this package
-library(fitdistrplus) # loads MASS which includes select so needs to be loaded before tidyverse
 library(tidyverse)
-library(readxl)
 library(cfs.misc)
-library(imputeTS)
 library(lubridate)
 
 # Simulation parameters ----------------------------------------------
@@ -14,7 +11,6 @@ simulation_parameters <- list(name = "demo",
                               random_seed = 1,
                               water_years = 1997:2011,
                               chinook_runs = c("Fall", "LateFall", "Spring", "Winter"),
-                              # ocean_year_probability describes probability of ocean survival being based on fork length relationship
                               ocean_year_probability = 1)
 usethis::use_data(simulation_parameters, overwrite = TRUE)
 
@@ -41,6 +37,7 @@ ocean_survival_parameters <- list("length" = readRDS("data-raw/OceanSurvivalPara
 usethis::use_data(ocean_survival_parameters, overwrite = TRUE)
 
 # Telemetry model parameters ----------------------------------------------
+# not documented in data.R; maybe ask Von to do that?
 
 telemetry_parameters <- readRDS("data-raw/TelemetryModelParameters.rds")
 usethis::use_data(telemetry_parameters, overwrite = TRUE)
@@ -64,6 +61,12 @@ rs_yolo <- c("min" = 0, "max" = 1, "inflection" = 74, "steepness" = -6)
 rearing_survival_parameters <- list("Delta" = rs_delta, "Yolo" = rs_yolo)
 usethis::use_data(rearing_survival_parameters, overwrite = TRUE)
 
+# Rearing abundance ----------------------------------------------
+
+rearing_proportion_parameters <- c("min" = 0, "max" = 1,
+                                   "inflection" = 100, "steepness" = 15)
+usethis::use_data(rearing_proportion_parameters, overwrite = TRUE)
+
 # Growth parameters ----------------------------------------------
 # from Perry et al 2015
 # b = allometric growth exponent
@@ -72,176 +75,171 @@ usethis::use_data(rearing_survival_parameters, overwrite = TRUE)
 # TU = upper temperature limit for growth
 
 growth_parameters <- c("b" = 0.338, "d" = 0.415, "g" = 0.315,
-                       "TL" = 1.833, "TU" = 24.918, "thresh" = 22)
+                       "TL" = 1.833, "TU" = 24.918)
 usethis::use_data(growth_parameters, overwrite = TRUE)
-
-# Rearing abundance ----------------------------------------------
-
-rearing_proportion_parameters <- c("min" = 0, "max" = 1,
-                                   "inflection" = 100, "steepness" = 15)
-usethis::use_data(rearing_proportion_parameters, overwrite = TRUE)
 
 # Annual abundance ----------------------------------------------
 
-annual_abundance <- read_csv("data-raw/AnnualAbundance.csv") %>%
+aa <- read_csv("data-raw/AnnualAbundance.csv") %>%
   select(Run, WaterYear, Abundance) %>%
   mutate(Abundance = round(Abundance)) %>%
   spread(key = Run, value = Abundance)
+
+annual_abundance <- list()
+for (i in c("Fall", "LateFall", "Spring", "Winter")){
+  annual_abundance[[i]] <- aa[[i]]
+  names(annual_abundance[[i]]) <- as.character(aa[["WaterYear"]])
+}
 usethis::use_data(annual_abundance, overwrite = TRUE)
+
+# Water year dates and model days ---------------------------------------------
+# the model day is simply a count from first date (1996-10-02) to last date (1997-09-30)
+
+dates_df <- tibble(Date = seq(ymd("1996-10-02"), ymd("2011-09-30"), by = "days"),
+                   ModelDay = 1:length(Date),
+                   WaterYear = water_year(Date))
+
+wy_model_days <- list()
+wy_dates <- list()
+for (i in unique(dates_df$WaterYear)){
+  tmp <- filter(dates_df, WaterYear == i)
+  wy_char <- as.character(i)
+  wy_model_days[[wy_char]] <- tmp[["ModelDay"]]
+  wy_dates[[wy_char]] <- tmp[["Date"]]
+}
+usethis::use_data(wy_model_days, overwrite = TRUE)
+usethis::use_data(wy_dates, overwrite = TRUE)
 
 # Flood duration ----------------------------------------------
 
 fd <- read_csv("data-raw/FloodDuration.csv")
-flood_duration <- list(Date = fd$Date, Value = fd$FloodDuration)
+# model simulates one water-year/run combination at a time
+# changing input data to make value lookups based on water years
+flood_duration <- list()
+for (i in names(wy_model_days)){
+  indices <- wy_model_days[[i]]
+  flood_duration[[i]] <- fd[["FloodDuration"]][indices]
+}
 usethis::use_data(flood_duration, overwrite = TRUE)
+
+# Floodplain temperature difference ----------------------------------------------
+
+dates_diff <- tibble(Date = seq(ymd("1996-10-02"), ymd("2011-09-30"), by = "days"),
+                     DOY = yday(Date),
+                     WaterYear = water_year(Date)) %>%
+  left_join(readRDS("data-raw/FloodplainTemperatureDifference.rds"))
+
+ftd <- list()
+for (i in unique(dates_diff$WaterYear)){
+  tmp <- filter(dates_diff, WaterYear == i)
+  ftd[[as.character(i)]] <- tmp[["Diff"]]
+}
+
+# default is to use the same temperature difference for Yolo and Delta
+floodplain_temperature_difference <- list("Yolo" = ftd,
+                                          "Delta" = ftd)
+usethis::use_data(floodplain_temperature_difference, overwrite = TRUE)
 
 # Toe Drain temperature ----------------------------------------------
 
-td <- readRDS("data-raw/ToeDrainTemp.rds")
-toe_drain_temperature <- list(Date = ymd(td$date),
-                              DOY = td$doy,
-                              Value = td$temp)
-usethis::use_data(toe_drain_temperature, overwrite = TRUE)
-
-# Floodplain temperature difference ----------------------------------------------
-# default is to use the same temperature difference for Yolo and Delta
-ftd <- readRDS("data-raw/FloodplainTemperatureDifference.rds")
-floodplain_temperature_difference <- list("Yolo" = list(DOY = ftd$DOY, Value = ftd$Diff),
-                                          "Delta" = list(DOY = ftd$DOY, Value = ftd$Diff))
-usethis::use_data(floodplain_temperature_difference, overwrite = TRUE)
-
-# Floodplain temperature ----------------------------------------------
-
-temp_diff <- readRDS("data-raw/FloodplainTemperatureDifference.rds")
-
 td <- readRDS("data-raw/ToeDrainTemp.rds") %>%
-  left_join(temp_diff, by = c("doy" = "DOY")) %>%
-  mutate(date = ymd(date),
-         value = temp + Diff)
+  arrange(date) %>%
+  mutate(WaterYear = water_year(date))
 
-fpt <- readRDS("data-raw/FreeportTemp.rds") %>%
-  mutate(DOY = lubridate::yday(date)) %>%
-  left_join(temp_diff) %>%
-  mutate(value = temp + Diff)
-
-floodplain_temperature <- list("Yolo" = list("Date" = td[["date"]], "Value" = td[["value"]]),
-                               "Delta" = list("Date" = fpt[["date"]],"Value" = fpt[["value"]]))
-usethis::use_data(floodplain_temperature, overwrite = TRUE)
+toe_drain_temperature <- list()
+for (i in unique(td$WaterYear)){
+  tmp <- filter(td, WaterYear == i)
+  toe_drain_temperature[[as.character(i)]] <- tmp[["temp"]]
+}
+usethis::use_data(toe_drain_temperature, overwrite = TRUE)
 
 # Freeport temperature ----------------------------------------------
 
-fpt <- readRDS("data-raw/FreeportTemp.rds")
-freeport_temperature <- list(Date = fpt$date,
-                             DOY = lubridate::yday(fpt$date),
-                             Value = fpt$temp)
+fpt <- readRDS("data-raw/FreeportTemp.rds") %>%
+  arrange(date) %>%
+  mutate(WaterYear = water_year(date))
+
+freeport_temperature <- list()
+for (i in unique(fpt$WaterYear)){
+  tmp <- filter(fpt, WaterYear == i)
+  freeport_temperature[[as.character(i)]] <- tmp[["temp"]]
+}
 usethis::use_data(freeport_temperature, overwrite = TRUE)
+
+# Floodplain temperature ----------------------------------------------
+
+load("data/floodplain_temperature_difference.rda")
+load("data/freeport_temperature.rda")
+load("data/toe_drain_temperature.rda")
+
+floodplain_temperature <- list("Yolo" = Map(function(x, y) x + y,
+                                            toe_drain_temperature, floodplain_temperature_difference[["Yolo"]]),
+                               "Delta" = Map(function(x, y) x + y,
+                                             freeport_temperature, floodplain_temperature_difference[["Delta"]]))
+usethis::use_data(floodplain_temperature, overwrite = TRUE)
 
 # Entry timing ----------------------------------------------
 
-klt_raw <- read_excel("data-raw/KnightsLandingCPUE.xlsx")
+klt <- readRDS("data-raw/KnightsLandingTiming.rds")
 
-knights_landing_timing <- klt_raw %>%
-  select(Date = DATE, paste("DAILY", c("FRC", "SRC", "WRC", "LFRC"), "%")) %>%
-  gather(key = RunCode, value = Percent, `DAILY FRC %`:`DAILY LFRC %`) %>%
-  left_join(tibble(RunCode = paste("DAILY", c("FRC", "SRC", "WRC", "LFRC"), "%"),
-                   Run = c("Fall", "Spring", "Winter", "LateFall"))) %>%
-  full_join(tibble(Date = seq(from = min(klt_raw$DATE, na.rm = TRUE),
-                              to = max(klt_raw$DATE, na.rm = TRUE),
-                              by = "days"))) %>%
-  mutate(WaterYear = water_year(Date),
-         Run = ifelse(is.na(Run), "Drop", Run),
-         Prop = Percent/100) %>%
-  select(Run, Date, WaterYear, Prop) %>%
-  spread(key = Run, value = Prop) %>%
-  arrange(Date) %>%
-  select(-Drop) %>%
-  replace_na(list(Fall = 0, Spring = 0, Winter = 0, LateFall = 0)) %>%
-  mutate(Date = ymd(Date),
-         ModelDay = 1:length(Fall))
+knights_landing_timing <- list()
+for (i in unique(klt$WaterYear)){
+  tmp <- filter(klt, WaterYear == i)
+  for (j in c("Fall", "LateFall", "Spring", "Winter")){
+    knights_landing_timing[[j]][[as.character(i)]] <- tmp[[j]]
+  }
+}
 usethis::use_data(knights_landing_timing, overwrite = TRUE)
 
 # Fork length ----------------------------------------------
 
-tabs <- excel_sheets("data-raw/KLRST_99_TO_2012_FL_WW_WEEK_TRAPID_TMH.xlsx")
-tabs <- tabs[tabs != "KEY"]
-fl_list_99_12 <- lapply(tabs, read_excel, path = "data-raw/KLRST_99_TO_2012_FL_WW_WEEK_TRAPID_TMH.xlsx")
-fl_df_99_12 <- bind_rows(fl_list_99_12) %>%
-  filter(SPECIES == "CS" & RACE %in% 1:4) %>%
-  select(DATE, RACE, FL, WW) %>%
-  arrange(DATE, RACE)
-
-fl_list_97_99 <- list()
-for (i in c("97CSFL", "KLFL98", "KLFL99")){
-  fl_list_97_99[[i]] <- read_excel(file.path("data-raw", paste0(i, ".xlsx"))) %>%
-    filter(RACE %in% 1:4) %>%
-    select(DATE, FL, RACE)
-}
-fl_df_97_99 <- bind_rows(fl_list_97_99)
-
-fl_df <- bind_rows(fl_df_97_99, fl_df_99_12) %>%
-  arrange(DATE) %>%
-  mutate(WaterYear = water_year(DATE)) %>%
-  rename(CODE = RACE) %>%
-  left_join(tibble("CODE" = 1:4, "RACE" = c("Fall", "Spring", "Winter", "LateFall"))) %>%
-  filter(FL > 0 & FL < 300) %>%  #  drop very large fish; presumably yearlings or data entry errors
-  select(WaterYear, Date = DATE, ForkLength = FL, Run = RACE) %>%
-  mutate(Date = as.character(Date))
-
-# fit lognormal distribution on every day with sufficient data
-# best approach?
-fl_dist_param_list <- list()
-ctr <- 1
-for (i in unique(fl_df$Run)){
-  fl_df_run <- filter(fl_df, Run == i)
-  for (j in unique(fl_df_run$Date)){
-    fl_df_run_date <- filter(fl_df_run, Date == j)
-    if (nrow(fl_df_run_date) > 3 && length(unique(fl_df_run_date$ForkLength)) > 1){
-      fit_lnorm <- fitdist(fl_df_run_date$ForkLength, "lnorm")
-      fl_dist_param_list[[ctr]] <- tibble(Run = i,
-                                          Date = j,
-                                          MeanLog = fit_lnorm$estimate[["meanlog"]],
-                                          SDLog = fit_lnorm$estimate[["sdlog"]])
-      ctr <- ctr + 1
-    }
-  }
-}
-fl_dist_param <- bind_rows(fl_dist_param_list)
-
-# impute MeanLog and SDLog parameters for days where data was insufficient to estimate
-# here I used moving average to impute; with temperature I used linear interpolation
-timing_fl <- knights_landing_timing %>%
-  gather(key = Run, value = Prop, Fall:Winter) %>%
-  mutate(Date = as.character(Date)) %>%
-  left_join(fl_dist_param) %>%
-  arrange(Run, Date) %>%
-  group_by(Run) %>%
-  mutate(ImputeMeanLog = na_ma(MeanLog),
-         ImputeSDLog = na_ma(SDLog),
-         Date = as.Date(Date))
+klfl <- readRDS("data-raw/KnightsLandingFLParams.rds")
 
 knights_landing_fl_params <- list()
-for (i in unique(timing_fl$Run)){
-  temp <- filter(timing_fl, Run == i) %>%
-    arrange(Date)
-  knights_landing_fl_params[[i]] <- list(Date = temp$Date,
-                                         MeanLog = temp$ImputeMeanLog,
-                                         SDLog = temp$ImputeSDLog)
+for (i in unique(klfl$WaterYear)){
+  wy_char <- as.character(i)
+  for (j in c("Fall", "LateFall", "Spring", "Winter")){
+    tmp <- filter(klfl, WaterYear == i & Run == j)
+    knights_landing_fl_params[[j]][[wy_char]][["MeanLog"]] <- tmp[["ImputeMeanLog"]]
+    knights_landing_fl_params[[j]][[wy_char]][["SDLog"]] <- tmp[["ImputeSDLog"]]
+  }
 }
 usethis::use_data(knights_landing_fl_params, overwrite = TRUE)
 
 # Freeport flow and Proportion entrained at Fremont Weir ----------------------------------------------
 
 exg_flow <- read_csv(file.path("data-raw", "ExgFlow.csv")) %>%
-  filter(Date > ymd("1996-10-01") & Date < ymd("2011-10-01"))
-fremont_weir_proportion <- list(Date = exg_flow$Date, Value = exg_flow$PropFremont)
-freeport_flow <- list(Date = exg_flow$Date, Value = exg_flow$Freeport)
+  filter(Date > ymd("1996-10-01") & Date < ymd("2011-10-01")) %>%
+  arrange(Date) %>%
+  mutate(WaterYear = water_year(Date))
+
+fremont_weir_proportion <- list()
+freeport_flow <- list()
+for (i in unique(exg_flow$WaterYear)){
+  tmp <- filter(exg_flow, WaterYear == i)
+  wy_char <- as.character(i)
+  fremont_weir_proportion[[wy_char]] <- tmp$PropFremont
+  freeport_flow[[wy_char]] <- tmp$Freeport
+}
 usethis::use_data(fremont_weir_proportion, overwrite = TRUE)
 usethis::use_data(freeport_flow, overwrite = TRUE)
 
 # Inundated area ----------------------------------------------
 
 flooded <- read_csv("data-raw/Inundated_sqkm_long.csv") %>%
-  filter(Scenario == "Exg" & Date < ymd("2011-10-01"))
-inundated_sqkm <- list(Date = flooded$Date, Value = flooded$Inundated_sqkm)
+  filter(Scenario == "Exg" & Date < ymd("2011-10-01")) %>%
+  arrange(Date)
+
+inundated_sqkm <- list()
+for (i in unique(flooded$WaterYear)){
+  tmp <- filter(flooded, WaterYear == i)
+  inundated_sqkm[[as.character(i)]] <- tmp$Inundated_sqkm
+}
+# loooking at the inundated area
+str(inundated_sqkm)
+# the thing that jumps out is how there is no inundated on Oct 1st of any year
+# I distinctly remember that the model started on Oct 2nd in WY1997
+# but it's fuzzy whether this strange choice Oct 2nd was used for every year
+# nonetheless, I'm moving forward b/c there is very little (no?) entrainment at this time of year
 usethis::use_data(inundated_sqkm, overwrite = TRUE)
 

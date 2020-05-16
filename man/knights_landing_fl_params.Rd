@@ -5,18 +5,18 @@
 \alias{knights_landing_fl_params}
 \title{Knights Landing fork length parameters}
 \format{
-A list comprised of 4 lists (one for each run: Fall, LateFall, Spring, Winter) that contain 3 vectors (Date, MeanLog, SDLog) of 5382 elements:
-\describe{
-  \item{Date}{calendar date}
-  \item{MeanLog}{meanlog parameter of lognormal distribution}
-  \item{SDLog}{sdlog parameter of lognormal distribution}
-}
+Nested, named lists of vectors of daily values. One list element for each Chinook run (Fall, LateFall, Spring, Winter),
+one sub-list element for each water year (1997-2011), and one sub-sub-list for each parameter (MeanLog, SDLog):
 }
 \usage{
 knights_landing_fl_params
 }
 \description{
-A dataset containing the parameters used to draw random fork lengths for cohorts entering the model
+Parameters used to draw fork lengths from lognormal distribution for cohorts entering the model
 in the Sacramento River at Knights Landing on each day of the 15-yr model period.
+}
+\examples{
+knights_landing_fl_params[["Spring"]][["1998"]][["SDLog"]][105:115]
+
 }
 \keyword{datasets}

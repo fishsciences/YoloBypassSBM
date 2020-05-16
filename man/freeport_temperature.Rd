@@ -5,16 +5,16 @@
 \alias{freeport_temperature}
 \title{Freeport temperature}
 \format{
-A list of 2 vectors of 5477 elements:
-\describe{
-  \item{Date}{calendar date}
-  \item{Value}{mean daily temperature (ºC)}
-}
+A list of 15 vectors of daily temperature values. One list element for each water year (1997-2011).
 }
 \usage{
 freeport_temperature
 }
 \description{
-A dataset containing the daily temperature in the Sacramento River at Freeport
+Daily temperature (ºC) in the Sacramento River at Freeport
+}
+\examples{
+freeport_temperature[["2000"]][100:110]
+
 }
 \keyword{datasets}
