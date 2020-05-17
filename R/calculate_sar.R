@@ -13,9 +13,9 @@ calculate_sar = function(sim_name) {
   require(lubridate)
 
   extracted_list <- extract_results(sim_name,
-                                    sac_columns = c("Rep", "WaterYear", "Run", "CohortID",
-                                                    "KnightsAbun", "KnightsDate", "KnightsDateIndex", "AdultReturns"),
-                                    yolo_columns = c("Rep", "WaterYear", "Run", "CohortID",
+                                    sac_columns = c("Rep", "WaterYear", "Run", "KnightsAbun",
+                                                    "KnightsDate", "KnightsDateIndex", "AdultReturns"),
+                                    yolo_columns = c("Rep", "WaterYear", "Run",
                                                      "KnightsAbun", "KnightsDate", "KnightsDateIndex",
                                                      "AdultReturns_YoloRear", "AdultReturns_YoloNoRear"))
 
@@ -23,7 +23,7 @@ calculate_sar = function(sim_name) {
     rename(SacReturns = AdultReturns) %>%
     full_join(extracted_list[["Yolo"]] %>%
                 mutate(YoloReturns = AdultReturns_YoloRear + AdultReturns_YoloNoRear),
-              by = c("Rep", "WaterYear", "Run", "CohortID", "KnightsAbun", "KnightsDate", "KnightsDateIndex")) %>%
+              by = c("Rep", "WaterYear", "Run", "KnightsAbun", "KnightsDate", "KnightsDateIndex")) %>%
     mutate(WaterYear = as.numeric(WaterYear)) %>%
     mutate(AdultReturns = SacReturns + YoloReturns,
            AdultReturns = ifelse(is.na(AdultReturns), 0, AdultReturns))
