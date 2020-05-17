@@ -4,10 +4,12 @@
 \alias{temperature_adjustment}
 \title{Adjust rearing time based on temperature}
 \usage{
-temperature_adjustment(model_day, duration, location)
+temperature_adjustment(water_year_string, date_index, duration, location)
 }
 \arguments{
-\item{model_day}{Model day when rearing was initiated}
+\item{water_year_string}{Water year (1997-2011) as a string}
+
+\item{date_index}{Index of date in a water year at start of rearing period; in all years except WY1997, equivalent to day of water year}
 
 \item{duration}{Maximum numbr of rearing days}
 

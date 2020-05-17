@@ -28,9 +28,10 @@ calculate_sar_difference = function(sim_name) {
 
   extracted_list <- extract_results(sim_name,
                                     sac_columns = c("Rep", "WaterYear", "Run", "CohortID",
-                                                    "KnightsAbun", "KnightsDay", "FremontAbun", "AdultReturns"),
+                                                    "KnightsAbun", "KnightsDate", "KnightsDateIndex",
+                                                    "FremontAbun", "AdultReturns"),
                                     yolo_columns = c("Rep", "WaterYear", "Run", "CohortID",
-                                                     "KnightsAbun", "KnightsDay", "FremontAbun",
+                                                     "KnightsAbun", "KnightsDate", "KnightsDateIndex", "FremontAbun",
                                                      "AdultReturns_YoloRear", "AdultReturns_YoloNoRear"))
 
   df_raw <- extracted_list[["Sac"]] %>%
@@ -38,9 +39,8 @@ calculate_sar_difference = function(sim_name) {
     full_join(extracted_list[["Yolo"]] %>%
                 mutate(YoloReturns = AdultReturns_YoloRear + AdultReturns_YoloNoRear) %>%
                 rename(YoloFremont = FremontAbun),
-              by = c("Rep", "WaterYear", "Run", "CohortID", "KnightsAbun", "KnightsDay")) %>%
-    mutate(KnightsDate = freeport_flow[["Date"]][KnightsDay],
-           WaterYear = as.numeric(WaterYear)) %>%
+              by = c("Rep", "WaterYear", "Run", "CohortID", "KnightsAbun", "KnightsDate", "KnightsDateIndex")) %>%
+    mutate(WaterYear = as.numeric(WaterYear)) %>%
     mutate_at(c("SacFremont", "SacReturns", "YoloFremont", "YoloReturns"), ~ifelse(is.na(.), 0, .))
 
   df_wyt <- df_raw %>%

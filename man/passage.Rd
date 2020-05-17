@@ -4,10 +4,19 @@
 \alias{passage}
 \title{Passage survival and time from Fremont Weir to Chipps Island}
 \usage{
-passage(model_day, abundance, fork_length, route = c("Sac", "Yolo"), sim_type)
+passage(
+  water_year_string,
+  date_index,
+  abundance,
+  fork_length,
+  route = c("Sac", "Yolo"),
+  sim_type
+)
 }
 \arguments{
-\item{model_day}{Model day at start of passage}
+\item{water_year_string}{Water year (1997-2011) as a string}
+
+\item{date_index}{Index of date in a water year that cohort begins passage; in all years except WY1997, equivalent to day of water year}
 
 \item{abundance}{Abundance of cohort on day route entered}
 

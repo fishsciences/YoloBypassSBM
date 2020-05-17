@@ -3,17 +3,18 @@
 #' Yolo Bypass rearing time after adjusting indirectly for passage time and directly for temperature
 #'
 #' @md
-#' @param model_day     Model day when rearing was initiated
-#' @param sim_type      Simulation type: deterministic or stochastic
+#' @param water_year_string    Water year (1997-2011) as a string
+#' @param date_index           Index of date in a water year that cohort begins Yolo rearing; in all years except WY1997, equivalent to day of water year
+#' @param sim_type             Simulation type: deterministic or stochastic
 #'
 #' @export
 #'
 #'
 
-rearing_time_yolo <- function(model_day, sim_type){
+rearing_time_yolo <- function(water_year_string, date_index, sim_type){
 
   params = rearing_time_parameters[["Yolo"]]
-  fd <- flood_duration[["Value"]][model_day]
+  fd <- flood_duration[[water_year_string]][date_index]
   rt_fd <- exp(params[["inter"]] + params[["slope"]] * fd)
 
   if (sim_type == "stochastic"){
@@ -26,6 +27,6 @@ rearing_time_yolo <- function(model_day, sim_type){
   rt_vals <- rt_fd - params[["passage_days"]]
   rt_vals <- ifelse(rt_vals < 0, 0, rt_vals)
 
-  mapply(function(md, dur) temperature_adjustment(md, dur, "Yolo"), model_day, rt_vals)
+  mapply(function(di, dur) temperature_adjustment(water_year_string, di, dur, "Yolo"), date_index, rt_vals)
 }
 

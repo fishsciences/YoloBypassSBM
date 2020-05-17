@@ -9,11 +9,11 @@
 #'
 #'
 
-
 run_simulation <- function(){
 
   params <- simulation_parameters
   set.seed(params[["random_seed"]])
+  water_year_string <- as.character(params[["water_years"]])
   # cat(params[["name"]], "\n")
 
   process_list <- function(input_list, col_name){
@@ -25,14 +25,13 @@ run_simulation <- function(){
   rep_list <- list()
   for (i in params[["reps"]]){
     wy_list <- list()
-    for (j in params[["water_years"]]){
+    for (j in water_year_string){
       run_list <- list()
       for (k in params[["chinook_runs"]]){
-        run_list[[k]] <- run_one_rep(water_year = j,
-                                     chinook_run = k,
-                                     sim_type = params[["sim_type"]])
+        run_list[[k]] <- run_one_rep(water_year_string = j,
+                                     chinook_run = k)
       }
-      wy_list[[as.character(j)]] <- process_list(run_list, "Run")
+      wy_list[[j]] <- process_list(run_list, "Run")
     }
     rep_list[[as.character(i)]] <- process_list(wy_list, "WaterYear")
     # carriage return, \r, allows for rewriting on same line

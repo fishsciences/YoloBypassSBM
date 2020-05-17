@@ -4,19 +4,13 @@
 \alias{run_one_rep}
 \title{Run one replicate of the model}
 \usage{
-run_one_rep(
-  water_year,
-  chinook_run = c("Fall", "LateFall", "Spring", "Winter"),
-  sim_type = c("deterministic", "stochastic")
-)
+run_one_rep(water_year_string, chinook_run)
 }
 \arguments{
-\item{water_year}{Water year (1997-2011)}
+\item{water_year_string}{Water year (1997-2011) as a string}
 
 \item{chinook_run}{Run timing classification: Fall, LateFall, Winter, Spring}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
-Run one replicate of the model; a replicate is a water_year/chinook_run/sim_type combination
+Run one replicate of the model; a replicate is a water_year/chinook_run combination
 }

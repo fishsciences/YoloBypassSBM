@@ -5,7 +5,8 @@
 \title{Rearing survival}
 \usage{
 rearing_survival(
-  model_day,
+  water_year_string,
+  date_index,
   abundance,
   duration,
   location = c("Delta", "Yolo"),
@@ -13,13 +14,15 @@ rearing_survival(
 )
 }
 \arguments{
-\item{model_day}{Model day at start of rearing period}
+\item{water_year_string}{Water year (1997-2011) as a string}
+
+\item{date_index}{Index of date in a water year at start of rearing period; in all years except WY1997, equivalent to day of water year}
 
 \item{abundance}{Abundance at start of rearing period}
 
 \item{duration}{Number of days spent rearing}
 
-\item{location}{Rearing location: Yolo or Delta}
+\item{location}{Rearing location: Delta or Yolo}
 
 \item{sim_type}{Simulation type: deterministic or stochastic}
 }

@@ -4,10 +4,12 @@
 \alias{rearing_time_yolo}
 \title{Yolo Bypass rearing time}
 \usage{
-rearing_time_yolo(model_day, sim_type)
+rearing_time_yolo(water_year_string, date_index, sim_type)
 }
 \arguments{
-\item{model_day}{Model day when rearing was initiated}
+\item{water_year_string}{Water year (1997-2011) as a string}
+
+\item{date_index}{Index of date in a water year that cohort begins Yolo rearing; in all years except WY1997, equivalent to day of water year}
 
 \item{sim_type}{Simulation type: deterministic or stochastic}
 }

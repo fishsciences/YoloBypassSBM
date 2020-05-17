@@ -4,10 +4,18 @@
 \alias{rearing_time_delta}
 \title{Delta rearing time}
 \usage{
-rearing_time_delta(model_day, passage_time, fork_length, sim_type)
+rearing_time_delta(
+  water_year_string,
+  date_index,
+  passage_time,
+  fork_length,
+  sim_type
+)
 }
 \arguments{
-\item{model_day}{Model day when rearing was initiated}
+\item{water_year_string}{Water year (1997-2011) as a string}
+
+\item{date_index}{Index of date in a water year that cohort begins Delta rearing; in all years except WY1997, equivalent to day of water year}
 
 \item{passage_time}{Passge time}
 

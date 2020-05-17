@@ -4,10 +4,12 @@
 \alias{entrainment}
 \title{Fish entrainment at Fremont Weir}
 \usage{
-entrainment(model_day, abundance, sim_type)
+entrainment(water_year_string, date_index, abundance, sim_type)
 }
 \arguments{
-\item{model_day}{Day that cohort reaches Fremont Weir}
+\item{water_year_string}{Water year (1997-2011) as a string}
+
+\item{date_index}{Index of date in a water year that cohort enters the model; in all years except WY1997, equivalent to day of water year}
 
 \item{abundance}{Abundance of cohort at Fremont Weir}
 

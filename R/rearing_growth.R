@@ -3,23 +3,22 @@
 #' Returns final wet_weight given initial wet_weight, model day, and duration
 #'
 #' @md
-#' @param wet_weight    Wet weight (g) at start of rearing period
-#' @param model_day     Model day when rearing was initiated
-#' @param duration      Duration (days) of rearing period
-#' @param location      Rearing location: Yolo or Delta
+#' @param water_year_string    Water year (1997-2011) as a string
+#' @param date_index           Index of date in a water year at start of rearing period; in all years except WY1997, equivalent to day of water year
+#' @param duration             Duration (days) of rearing period
+#' @param location             Rearing location: Yolo or Delta
+#' @param wet_weight           Wet weight (g) at start of rearing period
 #'
 #' @export
 #'
 
-rearing_growth <- function(wet_weight, model_day, duration, location){
-  # if(length(wet_weight) != length(model_day) || length(model_day) != length(duration))
-  #   stop("wet_weight, model_day, and duration must be the same length")
+rearing_growth <- function(water_year_string, date_index, duration, location, wet_weight){
 
-  helper <- function(md, dur){
-    mean(floodplain_temperature[[location]][["Value"]][md:(md + dur)])
+  helper <- function(di, dur){
+    mean(floodplain_temperature[[location]][[water_year_string]][di:(di + dur)])
   }
 
-  temp <- mapply(helper, model_day, duration)
+  temp <- mapply(helper, date_index, duration)
 
   growth(wet_weight, temp, duration)
 }

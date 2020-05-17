@@ -3,17 +3,17 @@
 #' Rearing survival based on rearing time and daily survival
 #'
 #' @md
-#' @param model_day     Model day at start of rearing period
-#' @param abundance     Abundance at start of rearing period
-#' @param duration      Number of days spent rearing
-#' @param location      Rearing location: Yolo or Delta
-#' @param sim_type      Simulation type: deterministic or stochastic
+#' @param water_year_string    Water year (1997-2011) as a string
+#' @param date_index           Index of date in a water year at start of rearing period; in all years except WY1997, equivalent to day of water year
+#' @param abundance            Abundance at start of rearing period
+#' @param duration             Number of days spent rearing
+#' @param location             Rearing location: Delta or Yolo
+#' @param sim_type             Simulation type: deterministic or stochastic
 #'
 #' @export
 #'
 
-rearing_survival <- function(model_day, abundance, duration, location = c("Delta", "Yolo"), sim_type){
-  # location <- match.arg(location)
+rearing_survival <- function(water_year_string, date_index, abundance, duration, location = c("Delta", "Yolo"), sim_type){
 
   p <- rearing_survival_parameters[[location]]
 
@@ -27,11 +27,10 @@ rearing_survival <- function(model_day, abundance, duration, location = c("Delta
 
   } else {
 
-    inundated_mean <- mapply(function(md, dur) mean(inundated_sqkm[["Value"]][md:(md + dur)]),
-                             model_day, duration)
+    inundated_mean <- mapply(function(di, dur) mean(inundated_sqkm[[water_year_string]][di:(di + dur)]),
+                             date_index, duration)
 
-    daily_survival <- logistic(inundated_sqkm[["Value"]][model_day],
-                               p[["max"]], p[["steepness"]], p[["inflection"]], p[["min"]])
+    daily_survival <- logistic(inundated_mean, p[["max"]], p[["steepness"]], p[["inflection"]], p[["min"]])
 
     # if duration is zero, then set survival to 1 to avoid potential log(0)
     daily_survival <- ifelse(duration == 0, 1, daily_survival)

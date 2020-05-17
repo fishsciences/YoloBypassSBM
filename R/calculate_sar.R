@@ -14,18 +14,17 @@ calculate_sar = function(sim_name) {
 
   extracted_list <- extract_results(sim_name,
                                     sac_columns = c("Rep", "WaterYear", "Run", "CohortID",
-                                                    "KnightsAbun", "KnightsDay", "AdultReturns"),
+                                                    "KnightsAbun", "KnightsDate", "KnightsDateIndex", "AdultReturns"),
                                     yolo_columns = c("Rep", "WaterYear", "Run", "CohortID",
-                                                     "KnightsAbun", "KnightsDay",
+                                                     "KnightsAbun", "KnightsDate", "KnightsDateIndex",
                                                      "AdultReturns_YoloRear", "AdultReturns_YoloNoRear"))
 
   df_raw <- extracted_list[["Sac"]] %>%
     rename(SacReturns = AdultReturns) %>%
     full_join(extracted_list[["Yolo"]] %>%
                 mutate(YoloReturns = AdultReturns_YoloRear + AdultReturns_YoloNoRear),
-              by = c("Rep", "WaterYear", "Run", "CohortID", "KnightsAbun", "KnightsDay")) %>%
-    mutate(KnightsDate = freeport_flow[["Date"]][KnightsDay],
-           WaterYear = as.numeric(WaterYear)) %>%
+              by = c("Rep", "WaterYear", "Run", "CohortID", "KnightsAbun", "KnightsDate", "KnightsDateIndex")) %>%
+    mutate(WaterYear = as.numeric(WaterYear)) %>%
     mutate(AdultReturns = SacReturns + YoloReturns,
            AdultReturns = ifelse(is.na(AdultReturns), 0, AdultReturns))
 
