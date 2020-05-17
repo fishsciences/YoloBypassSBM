@@ -14,7 +14,7 @@ run_simulation <- function(){
   params <- simulation_parameters
   set.seed(params[["random_seed"]])
   water_year_string <- as.character(params[["water_years"]])
-  # cat(params[["name"]], "\n")
+  cat(params[["name"]], "\n")
 
   process_list <- function(input_list, col_name){
     list("Sac" = dplyr::bind_rows(lapply(input_list, "[[", "Sac"), .id = col_name),
@@ -35,9 +35,9 @@ run_simulation <- function(){
     }
     rep_list[[as.character(i)]] <- process_list(wy_list, "WaterYear")
     # carriage return, \r, allows for rewriting on same line
-    # cat("\r", "Rep", i, "of", max(params[["reps"]]))
+    cat("\r", "Rep", i, "of", max(params[["reps"]]))
   }
-  # cat("\n")  # expectation is that cursor will generally be placed on next line, but this is insurance
+  cat("\n")  # expectation is that cursor will generally be placed on next line, but this is insurance
   if (!dir.exists("results")) dir.create("results")
 
   saveRDS(process_list(rep_list, "Rep"),
