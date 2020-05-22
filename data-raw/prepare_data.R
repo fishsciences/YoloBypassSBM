@@ -30,10 +30,9 @@ water_year_type <- cfs.misc::get_water_year_type() %>%
   select(WaterYear, WaterYearType)
 usethis::use_data(water_year_type, overwrite = TRUE)
 
-# Ocean return parameters ----------------------------------------------
+# Ocean survival parameters ----------------------------------------------
 
-ocean_survival_parameters <- list("length" = readRDS("data-raw/OceanSurvivalParameters_Length.rds"),
-                                  "intercept" = readRDS("data-raw/OceanSurvivalParameters_Intercept.rds"))
+ocean_survival_parameters <- readRDS("data-raw/OceanSurvivalParameters.rds")
 usethis::use_data(ocean_survival_parameters, overwrite = TRUE)
 
 # Telemetry model parameters ----------------------------------------------
