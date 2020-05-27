@@ -26,10 +26,13 @@ run_simulation <- function(){
   for (i in params[["reps"]]){
     wy_list <- list()
     for (j in water_year_string){
+      ocean_year_type <- ifelse(runif(1) < params[["ocean_year_probability"]],
+                                "length", "intercept")
       run_list <- list()
       for (k in params[["chinook_runs"]]){
         run_list[[k]] <- run_one_rep(water_year_string = j,
-                                     chinook_run = k)
+                                     chinook_run = k,
+                                     ocean_year_type)
       }
       wy_list[[j]] <- process_list(run_list, "Run")
     }

@@ -5,18 +5,19 @@
 #' @md
 #' @param water_year_string    Water year (1997-2011) as a string
 #' @param chinook_run          Run timing classification: Fall, LateFall, Winter, Spring
+#' @param ocean_year_type      Type of ocean survival relationship used for that year: length or intercept
 #'
 #' @export
 #'
 #'
 
-## probably would have take a different approach to storing output data if I was planning to incorporate Delta rearing from beginning
+## probably would have take a different approach to storing output data
+## if I was planning to incorporate Delta rearing from beginning
 ## approach that I'm using in Yolo section is very prone to typos
-run_one_rep <- function(water_year_string, chinook_run){
+run_one_rep <- function(water_year_string, chinook_run,
+                        ocean_year_type = c("length", "intercept")){
 
   sim_type <- simulation_parameters[["sim_type"]]
-  ocean_year_type <- ifelse(runif(1) < simulation_parameters[["ocean_year_probability"]],
-                            "length", "intercept")
 
   knights_dates <- wy_dates[[water_year_string]]
   knights_dates_index <- 1:length(knights_dates)

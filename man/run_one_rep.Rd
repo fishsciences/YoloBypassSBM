@@ -4,12 +4,18 @@
 \alias{run_one_rep}
 \title{Run one replicate of the model}
 \usage{
-run_one_rep(water_year_string, chinook_run)
+run_one_rep(
+  water_year_string,
+  chinook_run,
+  ocean_year_type = c("length", "intercept")
+)
 }
 \arguments{
 \item{water_year_string}{Water year (1997-2011) as a string}
 
 \item{chinook_run}{Run timing classification: Fall, LateFall, Winter, Spring}
+
+\item{ocean_year_type}{Type of ocean survival relationship used for that year: length or intercept}
 }
 \description{
 Run one replicate of the model; a replicate is a water_year/chinook_run combination
