@@ -9,8 +9,7 @@ rearing_survival(
   date_index,
   abundance,
   duration,
-  location = c("Delta", "Yolo"),
-  sim_type
+  location = c("Delta", "Yolo")
 )
 }
 \arguments{
@@ -23,8 +22,6 @@ rearing_survival(
 \item{duration}{Number of days spent rearing}
 
 \item{location}{Rearing location: Delta or Yolo}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Rearing survival based on rearing time and daily survival

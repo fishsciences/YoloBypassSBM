@@ -7,19 +7,18 @@
 #' @param date_index           Index of date in a water year that cohort begins Delta rearing; in all years except WY1997, equivalent to day of water year
 #' @param passage_time         Passge time
 #' @param fork_length          Average fork length (mm) of cohort
-#' @param sim_type             Simulation type: deterministic or stochastic
 #'
 #' @export
 #'
 #'
 
-rearing_time_delta <- function(water_year_string, date_index, passage_time, fork_length, sim_type){
+rearing_time_delta <- function(water_year_string, date_index, passage_time, fork_length){
 
   params = rearing_time_parameters[["Delta"]]
   flow <- freeport_flow[[water_year_string]][date_index]
   rt_fd <- exp(params[["inter"]] + params[["flow"]] * flow + params[["fork_length"]] * fork_length)
 
-  if (sim_type == "stochastic"){
+  if (simulation_parameters[["sim_type"]] == "stochastic"){
     rt_fd <- sapply(rt_fd, function(rt) MASS::rnegbin(n = 1, mu = rt, theta = params[["theta"]]))
   }
 

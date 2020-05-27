@@ -4,13 +4,7 @@
 \alias{rearing_time_delta}
 \title{Delta rearing time}
 \usage{
-rearing_time_delta(
-  water_year_string,
-  date_index,
-  passage_time,
-  fork_length,
-  sim_type
-)
+rearing_time_delta(water_year_string, date_index, passage_time, fork_length)
 }
 \arguments{
 \item{water_year_string}{Water year (1997-2011) as a string}
@@ -20,8 +14,6 @@ rearing_time_delta(
 \item{passage_time}{Passge time}
 
 \item{fork_length}{Average fork length (mm) of cohort}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Delta rearing time after adjusting for passage time and temperature

@@ -8,12 +8,11 @@
 #' @param abundance            Abundance at start of rearing period
 #' @param duration             Number of days spent rearing
 #' @param location             Rearing location: Delta or Yolo
-#' @param sim_type             Simulation type: deterministic or stochastic
 #'
 #' @export
 #'
 
-rearing_survival <- function(water_year_string, date_index, abundance, duration, location = c("Delta", "Yolo"), sim_type){
+rearing_survival <- function(water_year_string, date_index, abundance, duration, location = c("Delta", "Yolo")){
 
   p <- rearing_survival_parameters[[location]]
 
@@ -21,7 +20,7 @@ rearing_survival <- function(water_year_string, date_index, abundance, duration,
 
     daily_survival <- p[["survival"]]
 
-    if (sim_type == "stochastic") {
+    if (simulation_parameters[["sim_type"]] == "stochastic") {
       daily_survival <- runif(length(duration), p[["min"]], p[["max"]])
     }
 
@@ -35,7 +34,7 @@ rearing_survival <- function(water_year_string, date_index, abundance, duration,
     # if duration is zero, then set survival to 1 to avoid potential log(0)
     daily_survival <- ifelse(duration == 0, 1, daily_survival)
 
-    if (sim_type == "stochastic"){
+    if (simulation_parameters[["sim_type"]] == "stochastic"){
       # dividing by abundance to get stochastic daily survival that is turned into overall survival below
       daily_abundance <- mapply(function(abun, ds) rbinom(n = 1, size = abun, prob = ds),
                                 round(abundance), daily_survival)

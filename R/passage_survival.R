@@ -7,15 +7,11 @@
 #' @param fork_length   Fork length (mm) at Fremont Weir
 #' @param flow          Flow (cfs) at Freeport on day route entered
 #' @param route         Route: Sacramento River (Sac) or Yolo Bypass (Yolo)
-#' @param sim_type      Simulation type: deterministic or stochastic
 #'
 #' @export
-#' @examples
-#' passage_survival(1000, 70, 60000, "Sac", "deterministic")
-#' passage_survival(1000, 70, 60000, "Yolo", "deterministic")
 #'
 
-passage_survival <- function(abundance, fork_length, flow, route, sim_type){
+passage_survival <- function(abundance, fork_length, flow, route){
 
   params <- telemetry_parameters
 
@@ -28,7 +24,7 @@ passage_survival <- function(abundance, fork_length, flow, route, sim_type){
                           params[["beta_survival[2]"]] * flow +
                           params[["beta_survival[3]"]] * as.integer(route == "Yolo"))
 
-  if (sim_type == "stochastic") {
+  if (simulation_parameters[["sim_type"]] == "stochastic") {
     chipps_num <- mapply(function(abun, surv) rbinom(n = 1, size = abun, prob = surv),
                          round(abundance), survival)
   } else {

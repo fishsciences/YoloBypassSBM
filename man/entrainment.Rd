@@ -4,7 +4,7 @@
 \alias{entrainment}
 \title{Fish entrainment at Fremont Weir}
 \usage{
-entrainment(water_year_string, date_index, abundance, sim_type)
+entrainment(water_year_string, date_index, abundance)
 }
 \arguments{
 \item{water_year_string}{Water year (1997-2011) as a string}
@@ -12,8 +12,6 @@ entrainment(water_year_string, date_index, abundance, sim_type)
 \item{date_index}{Index of date in a water year that cohort enters the model; in all years except WY1997, equivalent to day of water year}
 
 \item{abundance}{Abundance of cohort at Fremont Weir}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Draw random number of fish entrained at Fremont Weir based on model day and abundance at Fremont Weir

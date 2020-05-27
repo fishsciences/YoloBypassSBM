@@ -17,16 +17,14 @@
 run_one_rep <- function(water_year_string, chinook_run,
                         ocean_year_type = c("length", "intercept")){
 
-  sim_type <- simulation_parameters[["sim_type"]]
-
   knights_dates <- wy_dates[[water_year_string]]
   knights_dates_index <- 1:length(knights_dates)
-  knights_abun <- initial_cohort_abundance(chinook_run, water_year_string, sim_type)
-  knights_fl <- initial_cohort_fork_length(chinook_run, water_year_string, knights_dates_index, sim_type)
+  knights_abun <- initial_cohort_abundance(chinook_run, water_year_string)
+  knights_fl <- initial_cohort_fork_length(chinook_run, water_year_string, knights_dates_index)
   knights_ww <- length_weight(knights_fl)
 
   # no travel time, mortality, or growth from Knights Landing to Fremont Weir
-  entrain_list <- entrainment(water_year_string, knights_dates_index, knights_abun, sim_type)
+  entrain_list <- entrainment(water_year_string, knights_dates_index, knights_abun)
 
   # Sacramento route
   sac <- data.frame(KnightsDate = knights_dates,
@@ -42,33 +40,38 @@ run_one_rep <- function(water_year_string, chinook_run,
   if (nrow(sac) > 0){
 
     # Sacramento River passage
-    sac_passage_list <- passage(water_year_string, sac[["KnightsDateIndex"]],
-                                sac[["FremontAbun"]], sac[["KnightsFL"]],
-                                route = "Sac", sim_type)
+    sac_passage_list <- passage(water_year_string,
+                                sac[["KnightsDateIndex"]],
+                                sac[["FremontAbun"]],
+                                sac[["KnightsFL"]],
+                                route = "Sac")
 
     sac[["DeltaDateIndex"]] <- sac[["KnightsDateIndex"]] + sac_passage_list[["PassageTime"]]
     sac[["DeltaAbun"]] <- sac_passage_list[["Abundance"]]
 
     # Delta rearing
 
-    sac[["DeltaRearingTime"]] <- rearing_time_delta(water_year_string, sac[["DeltaDateIndex"]],
+    sac[["DeltaRearingTime"]] <- rearing_time_delta(water_year_string,
+                                                    sac[["DeltaDateIndex"]],
                                                     sac_passage_list[["PassageTime"]],
-                                                    sac[["KnightsFL"]], sim_type)
+                                                    sac[["KnightsFL"]])
 
-    sac[["ChippsAbun"]] <- rearing_survival(water_year_string, sac[["DeltaDateIndex"]],
-                                            sac[["DeltaAbun"]], sac[["DeltaRearingTime"]],
-                                            location = "Delta", sim_type)
+    sac[["ChippsAbun"]] <- rearing_survival(water_year_string,
+                                            sac[["DeltaDateIndex"]],
+                                            sac[["DeltaAbun"]],
+                                            sac[["DeltaRearingTime"]],
+                                            location = "Delta")
 
-    sac[["ChippsFL"]] <- weight_length(rearing_growth(water_year_string, sac[["DeltaDateIndex"]],
-                                                      sac[["DeltaRearingTime"]], "Delta",
+    sac[["ChippsFL"]] <- weight_length(rearing_growth(water_year_string,
+                                                      sac[["DeltaDateIndex"]],
+                                                      sac[["DeltaRearingTime"]],
+                                                      "Delta",
                                                       sac[["KnightsWW"]]))
 
     # Ocean
-
     sac[["AdultReturns"]] <- ocean_survival(sac[["ChippsAbun"]],
                                             sac[["ChippsFL"]],
-                                            ocean_year_type,
-                                            sim_type)
+                                            ocean_year_type)
   }else{
     sac = data.frame()
   }
@@ -89,29 +92,36 @@ run_one_rep <- function(water_year_string, chinook_run,
     # Yolo Bypass rearing
 
     # YoloRearingAbun is proportion of cohorts that "decide" to rear on the Yolo Bypass multipled by abundance
-    yolo[["YoloRearingAbun"]] <- rearing_abundance(yolo[["FremontAbun"]], yolo[["KnightsFL"]], sim_type)
-    yolo[["YoloRearingTime"]] <- rearing_time_yolo(water_year_string, yolo[["KnightsDateIndex"]], sim_type)
+    yolo[["YoloRearingAbun"]] <- rearing_abundance(yolo[["FremontAbun"]], yolo[["KnightsFL"]])
+    yolo[["YoloRearingTime"]] <- rearing_time_yolo(water_year_string, yolo[["KnightsDateIndex"]])
 
-    yolo[["PostYoloRearingAbun"]]  <- rearing_survival(water_year_string, yolo[["KnightsDateIndex"]],
-                                                       yolo[["YoloRearingAbun"]], yolo[["YoloRearingTime"]],
-                                                       location = "Yolo", sim_type)
+    yolo[["PostYoloRearingAbun"]]  <- rearing_survival(water_year_string,
+                                                       yolo[["KnightsDateIndex"]],
+                                                       yolo[["YoloRearingAbun"]],
+                                                       yolo[["YoloRearingTime"]],
+                                                       location = "Yolo")
 
-    yolo[["PostYoloRearingFL"]] <- weight_length(rearing_growth(water_year_string, yolo[["KnightsDateIndex"]],
-                                                                yolo[["YoloRearingTime"]], "Yolo",
+    yolo[["PostYoloRearingFL"]] <- weight_length(rearing_growth(water_year_string,
+                                                                yolo[["KnightsDateIndex"]],
+                                                                yolo[["YoloRearingTime"]],
+                                                                "Yolo",
                                                                 yolo[["KnightsWW"]]))
 
     # Yolo Bypass passage
 
     # yolo passage for rearing individuals
-    yolo_passage_rear <- passage(water_year_string, yolo[["KnightsDateIndex"]] + yolo[["YoloRearingTime"]],
-                                 yolo[["PostYoloRearingAbun"]], yolo[["PostYoloRearingFL"]],
-                                 route = "Yolo", sim_type)
+    yolo_passage_rear <- passage(water_year_string,
+                                 yolo[["KnightsDateIndex"]] + yolo[["YoloRearingTime"]],
+                                 yolo[["PostYoloRearingAbun"]],
+                                 yolo[["PostYoloRearingFL"]],
+                                 route = "Yolo")
 
     # yolo passage for non-rearing individuals
-    yolo_passage_no_rear <- passage(water_year_string, yolo[["KnightsDateIndex"]],
+    yolo_passage_no_rear <- passage(water_year_string,
+                                    yolo[["KnightsDateIndex"]],
                                     yolo[["FremontAbun"]] - yolo[["YoloRearingAbun"]],
                                     yolo[["KnightsFL"]],
-                                    route = "Yolo", sim_type)
+                                    route = "Yolo")
 
     yolo[["DeltaAbun_YoloRear"]] <- yolo_passage_rear[["Abundance"]]
     yolo[["DeltaAbun_YoloNoRear"]] <- yolo_passage_no_rear[["Abundance"]]
@@ -120,37 +130,45 @@ run_one_rep <- function(water_year_string, chinook_run,
     yolo[["DeltaDateIndex_YoloNoRear"]] <- yolo[["KnightsDateIndex"]] + yolo_passage_no_rear[["PassageTime"]]
 
     # Delta rearing
-    yolo[["DeltaRearingTime_YoloRear"]] <- rearing_time_delta(water_year_string, yolo[["DeltaDateIndex_YoloRear"]],
+    yolo[["DeltaRearingTime_YoloRear"]] <- rearing_time_delta(water_year_string,
+                                                              yolo[["DeltaDateIndex_YoloRear"]],
                                                               yolo_passage_rear[["PassageTime"]],
-                                                              yolo[["PostYoloRearingFL"]], sim_type)
-    yolo[["DeltaRearingTime_YoloNoRear"]] <- rearing_time_delta(water_year_string, yolo[["DeltaDateIndex_YoloNoRear"]],
+                                                              yolo[["PostYoloRearingFL"]])
+    yolo[["DeltaRearingTime_YoloNoRear"]] <- rearing_time_delta(water_year_string,
+                                                                yolo[["DeltaDateIndex_YoloNoRear"]],
                                                                 yolo_passage_no_rear[["PassageTime"]],
-                                                                yolo[["KnightsFL"]], sim_type)
+                                                                yolo[["KnightsFL"]])
 
-    yolo[["ChippsAbun_YoloRear"]] <- rearing_survival(water_year_string, yolo[["DeltaDateIndex_YoloRear"]],
-                                                      yolo[["DeltaAbun_YoloRear"]], yolo[["DeltaRearingTime_YoloRear"]],
-                                                      location = "Delta", sim_type)
-    yolo[["ChippsAbun_YoloNoRear"]] <- rearing_survival(water_year_string, yolo[["DeltaDateIndex_YoloNoRear"]],
-                                                      yolo[["DeltaAbun_YoloNoRear"]], yolo[["DeltaRearingTime_YoloNoRear"]],
-                                                      location = "Delta", sim_type)
+    yolo[["ChippsAbun_YoloRear"]] <- rearing_survival(water_year_string,
+                                                      yolo[["DeltaDateIndex_YoloRear"]],
+                                                      yolo[["DeltaAbun_YoloRear"]],
+                                                      yolo[["DeltaRearingTime_YoloRear"]],
+                                                      location = "Delta")
+    yolo[["ChippsAbun_YoloNoRear"]] <- rearing_survival(water_year_string,
+                                                        yolo[["DeltaDateIndex_YoloNoRear"]],
+                                                        yolo[["DeltaAbun_YoloNoRear"]],
+                                                        yolo[["DeltaRearingTime_YoloNoRear"]],
+                                                        location = "Delta")
 
-    yolo[["ChippsFL_YoloRear"]] <- weight_length(rearing_growth(water_year_string, yolo[["DeltaDateIndex_YoloRear"]],
-                                                                yolo[["DeltaRearingTime_YoloRear"]], "Delta",
+    yolo[["ChippsFL_YoloRear"]] <- weight_length(rearing_growth(water_year_string,
+                                                                yolo[["DeltaDateIndex_YoloRear"]],
+                                                                yolo[["DeltaRearingTime_YoloRear"]],
+                                                                "Delta",
                                                                 length_weight(yolo[["PostYoloRearingFL"]])))
-    yolo[["ChippsFL_YoloNoRear"]] <- weight_length(rearing_growth(water_year_string, yolo[["DeltaDateIndex_YoloNoRear"]],
-                                                                  yolo[["DeltaRearingTime_YoloNoRear"]], "Delta",
+    yolo[["ChippsFL_YoloNoRear"]] <- weight_length(rearing_growth(water_year_string,
+                                                                  yolo[["DeltaDateIndex_YoloNoRear"]],
+                                                                  yolo[["DeltaRearingTime_YoloNoRear"]],
+                                                                  "Delta",
                                                                   yolo[["KnightsWW"]]))
 
     # Ocean
 
     yolo[["AdultReturns_YoloRear"]] <- ocean_survival(yolo[["ChippsAbun_YoloRear"]],
                                                       yolo[["ChippsFL_YoloRear"]],
-                                                      ocean_year_type,
-                                                      sim_type)
+                                                      ocean_year_type)
     yolo[["AdultReturns_YoloNoRear"]] <- ocean_survival(yolo[["ChippsAbun_YoloNoRear"]],
                                                         yolo[["ChippsFL_YoloNoRear"]],
-                                                        ocean_year_type,
-                                                        sim_type)
+                                                        ocean_year_type)
   }else{
     yolo = data.frame()
   }

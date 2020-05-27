@@ -4,7 +4,7 @@
 \alias{passage_time}
 \title{Passage time from Fremont Weir to Chipps}
 \usage{
-passage_time(fork_length, flow, route, sim_type)
+passage_time(fork_length, flow, route)
 }
 \arguments{
 \item{fork_length}{Fork length (mm) at Fremont Weir}
@@ -12,14 +12,7 @@ passage_time(fork_length, flow, route, sim_type)
 \item{flow}{Flow (cfs) at Freeport on day route entered}
 
 \item{route}{Route: Sacramento River (Sac) or Yolo Bypass (Yolo)}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Passage time (days) from Fremont Weir to Chipps Island based on fork length, flow, and route
-}
-\examples{
-passage_time(70, 60000, "Sac", "deterministic")
-passage_time(70, 60000, "Yolo", "deterministic")
-
 }

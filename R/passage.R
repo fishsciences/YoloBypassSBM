@@ -8,17 +8,16 @@
 #' @param abundance            Abundance of cohort on day route entered
 #' @param fork_length          Fork length (mm) at Fremont Weir
 #' @param route                Route: Sacramento River (Sac) or Yolo Bypass (Yolo)
-#' @param sim_type             Simulation type: deterministic or stochastic
 #'
 #' @export
 #'
 #'
 
-passage <- function(water_year_string, date_index, abundance, fork_length, route = c("Sac", "Yolo"), sim_type){
+passage <- function(water_year_string, date_index, abundance, fork_length, route = c("Sac", "Yolo")){
 
   flow <- freeport_flow[[water_year_string]][date_index]
-  list("Abundance" = passage_survival(abundance, fork_length, flow, route, sim_type),
-       "PassageTime" = passage_time(fork_length, flow, route, sim_type))
+  list("Abundance" = passage_survival(abundance, fork_length, flow, route),
+       "PassageTime" = passage_time(fork_length, flow, route))
 }
 
 

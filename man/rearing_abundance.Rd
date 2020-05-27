@@ -4,14 +4,12 @@
 \alias{rearing_abundance}
 \title{Rearing abundance}
 \usage{
-rearing_abundance(abundance, fork_length, sim_type)
+rearing_abundance(abundance, fork_length)
 }
 \arguments{
 \item{abundance}{Abundance of cohort at Fremot Weir}
 
 \item{fork_length}{Fork length (mm) at Fremont Weir}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Number of individuals in cohort entrained onto Yolo Bypass that actually rears on the Yolo Bypass based on hypothetical logistic function with fork length

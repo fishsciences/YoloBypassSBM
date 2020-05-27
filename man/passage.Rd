@@ -9,8 +9,7 @@ passage(
   date_index,
   abundance,
   fork_length,
-  route = c("Sac", "Yolo"),
-  sim_type
+  route = c("Sac", "Yolo")
 )
 }
 \arguments{
@@ -23,8 +22,6 @@ passage(
 \item{fork_length}{Fork length (mm) at Fremont Weir}
 
 \item{route}{Route: Sacramento River (Sac) or Yolo Bypass (Yolo)}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Passage survival and time (days) from Fremont Weir to Chipps Island based on fork length, flow, and route

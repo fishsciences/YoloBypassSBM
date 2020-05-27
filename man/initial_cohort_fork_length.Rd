@@ -4,12 +4,7 @@
 \alias{initial_cohort_fork_length}
 \title{Initial cohort fork length}
 \usage{
-initial_cohort_fork_length(
-  chinook_run,
-  water_year_string,
-  date_index,
-  sim_type
-)
+initial_cohort_fork_length(chinook_run, water_year_string, date_index)
 }
 \arguments{
 \item{chinook_run}{Run timing classification: Fall, LateFall, Winter, Spring}
@@ -17,8 +12,6 @@ initial_cohort_fork_length(
 \item{water_year_string}{Water year (1997-2011) as a string}
 
 \item{date_index}{Index of date in a water year that cohort enters the model; in all years except WY1997, equivalent to day of water year}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Initial cohort fork length based on model day and Chinook run

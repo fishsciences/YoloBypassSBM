@@ -4,14 +4,12 @@
 \alias{initial_cohort_abundance}
 \title{Initial cohort abundance}
 \usage{
-initial_cohort_abundance(chinook_run, water_year_string, sim_type)
+initial_cohort_abundance(chinook_run, water_year_string)
 }
 \arguments{
 \item{chinook_run}{Run timing classification: Fall, LateFall, Winter, Spring}
 
 \item{water_year_string}{Water year 1997-2011 as a string}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Initial cohort abundances based on water year and Chinook run

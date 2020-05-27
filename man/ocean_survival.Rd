@@ -7,8 +7,7 @@
 ocean_survival(
   abundance,
   fork_length,
-  ocean_year_type = c("length", "intercept"),
-  sim_type
+  ocean_year_type = c("length", "intercept")
 )
 }
 \arguments{
@@ -17,8 +16,6 @@ ocean_survival(
 \item{fork_length}{Average fork length (mm) of cohort at estuary entry (Chipps Island)}
 
 \item{ocean_year_type}{Type of ocean survival relationship used for that year: length or intercept}
-
-\item{sim_type}{Simulation type: deterministic or stochastic}
 }
 \description{
 Number of adults returning from ocean after three years

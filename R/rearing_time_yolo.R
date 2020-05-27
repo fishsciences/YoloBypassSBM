@@ -5,19 +5,18 @@
 #' @md
 #' @param water_year_string    Water year (1997-2011) as a string
 #' @param date_index           Index of date in a water year that cohort begins Yolo rearing; in all years except WY1997, equivalent to day of water year
-#' @param sim_type             Simulation type: deterministic or stochastic
 #'
 #' @export
 #'
 #'
 
-rearing_time_yolo <- function(water_year_string, date_index, sim_type){
+rearing_time_yolo <- function(water_year_string, date_index){
 
   params = rearing_time_parameters[["Yolo"]]
   fd <- flood_duration[[water_year_string]][date_index]
   rt_fd <- exp(params[["inter"]] + params[["slope"]] * fd)
 
-  if (sim_type == "stochastic"){
+  if (simulation_parameters[["sim_type"]] == "stochastic"){
     rt_fd <- sapply(rt_fd, function(rt) MASS::rnegbin(n = 1, mu = rt, theta = params[["theta"]]))
   }
 
