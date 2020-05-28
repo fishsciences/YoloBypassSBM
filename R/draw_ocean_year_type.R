@@ -1,4 +1,4 @@
-#' Ocean year type
+#' Draw ocean year type
 #'
 #' Determine whether ocean year type is length or intercept; used in ocean survival relationship
 #'
@@ -8,7 +8,7 @@
 #'
 #'
 
-ocean_year_type <- function(){
+draw_ocean_year_type <- function(){
 
   prob <-simulation_parameters[["ocean_year_probability"]]
 
