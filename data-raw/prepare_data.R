@@ -22,12 +22,8 @@ usethis::use_data(length_weight_parameters, overwrite = TRUE)
 
 # Water year type ----------------------------------------------
 
-water_year_type <- cfs.misc::get_water_year_type() %>%
-  filter(WaterYear %in% 1997:2011) %>%
-  left_join(tibble(SAC = c("W", "AN", "BN", "D", "C"),
-                   WaterYearType = c("Wet", "Above\nNormal", "Below\nNormal", "Dry", "Critical"))) %>%
-  mutate(WaterYearType = factor(WaterYearType, levels = c("Critical", "Dry", "Below\nNormal", "Above\nNormal", "Wet"))) %>%
-  select(WaterYear, WaterYearType)
+water_year_type <- tibble(WaterYear = 1997:2011,
+                          WaterYearType = get_water_year_type(WaterYear))
 usethis::use_data(water_year_type, overwrite = TRUE)
 
 # Ocean survival parameters ----------------------------------------------
