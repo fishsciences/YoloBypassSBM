@@ -17,32 +17,24 @@ rearing_survival <- function(water_year_string, date_index, abundance, duration,
   p <- rearing_survival_parameters[[location]]
 
   if (location == "Delta"){
-
     daily_survival <- p[["survival"]]
-
     if (simulation_parameters[["sim_type"]] == "stochastic") {
       daily_survival <- runif(length(duration), p[["min"]], p[["max"]])
     }
-
   } else {
-
     inundated_mean <- mapply(function(di, dur) mean(inundated_sqkm[[water_year_string]][di:(di + dur)]),
                              date_index, duration)
-
     daily_survival <- logistic(inundated_mean, p[["max"]], p[["steepness"]], p[["inflection"]], p[["min"]])
-
-    # if duration is zero, then set survival to 1 to avoid potential log(0)
+    # if duration is zero, then set survival to 1 to avoid potential problems with zeros
     daily_survival <- ifelse(duration == 0, 1, daily_survival)
-
-    if (simulation_parameters[["sim_type"]] == "stochastic"){
-      # dividing by abundance to get stochastic daily survival that is turned into overall survival below
-      daily_abundance <- mapply(function(abun, ds) rbinom(n = 1, size = abun, prob = ds),
-                                round(abundance), daily_survival)
-      # trying to catch problem values so we end up with zero rather than NaN
-      # setting survival to 1 following same logic as above
-      daily_survival <- ifelse(abundance == 0, 1, daily_abundance/abundance)
-    }
-
   }
-  abundance * exp(log(daily_survival) * duration)
+  overall_survival <- exp(log(daily_survival) * duration)
+  final_abundance <- abundance * overall_survival
+  # in the Delta, rearing survival is doubly stochastic (uniform and binomial)
+  # in the Yolo Bypass, rearing survival is singly stochastic (binomial)
+  if (simulation_parameters[["sim_type"]] == "stochastic"){
+    final_abundance <- mapply(function(abun, ds) rbinom(n = 1, size = abun, prob = ds),
+                              round(abundance), overall_survival)
+  }
+  return(final_abundance)
 }
