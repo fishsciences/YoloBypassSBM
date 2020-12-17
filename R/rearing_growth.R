@@ -20,5 +20,6 @@ rearing_growth <- function(water_year_string, date_index, duration, location, we
 
   temp <- mapply(helper, date_index, duration)
 
-  growth(wet_weight, temp, duration)
+  x = growth(wet_weight, temp, duration)
+  runif(x, x*0.9, x*1.1) # draw from uniform distribution of +/-10%
 }
